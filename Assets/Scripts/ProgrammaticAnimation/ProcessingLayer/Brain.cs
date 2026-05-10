@@ -8,6 +8,7 @@ public class Brain : MonoBehaviour
     public List<Receptor> receptors = new List<Receptor>();//感受器列表
     public List<Effector> effectors = new List<Effector>();//效应器列表
     public List<PointConstraint> pointConstraints = new List<PointConstraint>();//点约束列表
+    public List<LineController> lineControllers = new List<LineController>();//线控制器列表
 
     public List<Behavior> behaviors = new List<Behavior>();
     public Behavior curBehavior; // 决策中心的行为
@@ -101,10 +102,28 @@ public class Brain : MonoBehaviour
         {
             pointConstraint.OnUpdate(true);
         }
+        foreach (var lineController in lineControllers)
+        {
+            lineController.OnUpdate();
+        }
     }
 
     public void ChangeBehavior(Behavior newBehavior)
     {
+        if (newBehavior != null && newBehavior != curBehavior)
+        {
+            if (curBehavior != null)
+            {
+                curBehavior.OnExit();
+            }
+            curBehavior = newBehavior;
+            curBehavior.OnEnter();
+        }
+    }
+
+    public void ChangeBehavior(string behaviorName)
+    {
+        Behavior newBehavior = behaviors.Find(behavior => behavior.behaviorName == behaviorName);
         if (newBehavior != null && newBehavior != curBehavior)
         {
             if (curBehavior != null)
@@ -162,6 +181,7 @@ public class Brain : MonoBehaviour
         PointConstraint pointConstraint = tr.GetComponent<PointConstraint>();
         Receptor[] receptor = tr.GetComponents<Receptor>();
         Effector[] effector = tr.GetComponents<Effector>();
+        LineController[] lineController = tr.GetComponents<LineController>();
         if (receptor != null){
             foreach (var r in receptor)
             {
@@ -184,6 +204,17 @@ public class Brain : MonoBehaviour
                 }
             }
         }
+        if (lineController != null){
+            foreach (var lc in lineController)
+            {
+                if (!lineControllers.Contains(lc))
+                {
+                    lineControllers.Add(lc);
+                    lc.brain = this;
+                    lc.autoUpdate = false;
+                }
+            }
+        }
         if (pointConstraint != null)
         {
             if (!pointConstraints.Contains(pointConstraint))
@@ -203,20 +234,6 @@ public class Brain : MonoBehaviour
                     if (parent != null)
                         InitLists(parent.transform);
                 }
-        }
-    }
-
-    public void SwitchBehavior(string behaviorName)
-    {
-        Behavior newBehavior = behaviors.Find(behavior => behavior.behaviorName == behaviorName);
-        if (newBehavior != null && newBehavior != curBehavior)
-        {
-            if (curBehavior != null)
-            {
-                curBehavior.OnExit();
-            }
-            curBehavior = newBehavior;
-            curBehavior.OnEnter();
         }
     }
 
@@ -261,9 +278,19 @@ public class Brain : MonoBehaviour
         curBehavior.eventModule.Clear();
     }
 
+    public Receptor GetReceptor(string receptorName)
+    {
+        return receptors.Find(receptor => receptor.receptorName == receptorName);
+    }
+
     public Effector GetEffector(string effectorName)
     {
         return effectors.Find(effector => effector.effectorName == effectorName);
+    }
+
+    public LineController GetLineController(string lineControllerName)
+    {
+        return lineControllers.Find(lineController => lineController.controllerName == lineControllerName);
     }
 
     public void TriggerEffector(string effectorName)

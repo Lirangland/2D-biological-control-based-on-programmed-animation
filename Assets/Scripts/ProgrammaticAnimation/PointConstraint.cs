@@ -23,7 +23,7 @@ public class PointConstraintData
     public bool applyAngleConstraint;//是否启用角度约束
     public enum AngleConstraintDirectionType
     {
-        TargetToCurrent,//以约束目标点指向当前点的方向为参考
+        NextChainToTarget,//以约束目标点指向当前点的方向为参考
         TransformUp//以目标点的up方向为参考
     }
     public AngleConstraintDirectionType angleConstraintDirectionType;//角度约束参考方向类型
@@ -233,6 +233,15 @@ public class PointConstraint : MonoBehaviour
         if (targetPosition != null)
         {
             transform.position = targetPosition;
+        }
+    }
+
+    public void ApproachTarget(Vector3 targetPosition)
+    {
+        transform.position = targetPosition;
+        for (int i = 0; i < solverIterations; i++)
+        {
+            SolveEntireChainConstraints();
         }
     }
 

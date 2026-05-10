@@ -4,8 +4,11 @@ using UnityEngine.Animations.Rigging;
 
 //挂载在点约束节点上，为骨骼链绘制线条
 [RequireComponent(typeof(PointConstraint))]
-public class LineController : Effector
+public class LineController : MonoBehaviour
 {
+    public bool autoUpdate = true; //是否自动更新
+    public string controllerName; // 效应器名称，便于在编辑器中识别和管理
+    public Brain brain; // 效应器所在生物的决策中心引用
     public LineRenderer lineRenderer;
     public int insertPointCount = 0;//线条插值点数量，越大线条越平滑
     public float zOffset = 0.01f;//线条相对于约束点的z轴偏移，避免与约束点重叠时出现穿模问题
@@ -40,6 +43,12 @@ public class LineController : Effector
     }
 
     void Update()
+    {
+        if (!autoUpdate) return;
+        OnUpdate();
+    }
+
+    public void OnUpdate()
     {
         UpdateTransformList();
         if (linePoints.Count == 0) return;

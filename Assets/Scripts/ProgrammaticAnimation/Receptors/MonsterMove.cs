@@ -8,8 +8,8 @@ public class MonsterMove : Receptor
 {
     public List<TentacleEnd> TantacleEnds = new List<TentacleEnd>();//触手末端列表，鼠标位于怪物身体周围时，根据等分的区域选择当前控制的触手末端
     public float moveDistance = 3;
-    public float tantacleMoveSpeed = 5f;
-    public float tantacleMoveThreshold = 0.1f;
+    public float tentacleMoveSpeed = 5f;
+    public float tentacleMoveThreshold = 0.1f;
     [SerializeField] TentacleEnd curTentacleEnd;//当前控制的触手末端
 
     public override void OnUpdate()
@@ -55,9 +55,8 @@ public class MonsterMove : Receptor
                 Vector3 target = transform.position + dir.normalized * moveDistance;
                 newDir = target - curTentacleEnd.transform.position;
             }
-            Debug.Log($"dir: {dir}, newDir: {newDir}");
-            if (newDir.magnitude > tantacleMoveThreshold)
-                curTentacleEnd.transform.position += newDir.normalized * Mathf.Min(newDir.magnitude, 1f) * Time.deltaTime * tantacleMoveSpeed;
+            if (newDir.magnitude > tentacleMoveThreshold)
+                curTentacleEnd.transform.position += newDir.normalized * Mathf.Min(newDir.magnitude, 1f) * Time.deltaTime * tentacleMoveSpeed;
         }
         
         if (Mouse.current.leftButton.wasReleasedThisFrame)

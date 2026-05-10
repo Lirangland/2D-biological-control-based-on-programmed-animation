@@ -1,0 +1,28 @@
+输入：约束数据 constraint, 是否由中央调度调用 fromUpdate
+输出：当前点与目标点位置被修正
+
+1.  currentPos ← transform.position
+2.  targetPos ← constraint.target.transform.position
+3.  direction ← currentPos - targetPos
+4.  distance ← |direction|
+5.  if distance ≈ 0: direction ← 微小偏移, distance ← 微小量
+6.  // 计算期望距离
+7.  if constraint.fixedDistance > 0:
+8.      desiredDist ← constraint.fixedDistance
+9.  else:
+10.     desiredDist ← Clamp(distance, constraint.minDistance, constraint.maxDistance)
+11. // 若启用角度约束，投影方向到允许角度范围
+12. constrainedDir ← GetConstrainedDirection(constraint, direction.normalized)
+13. // 计算位置修正量
+14. desiredDelta ← constrainedDir * desiredDist
+15. correction ← desiredDelta - direction
+16. // 根据权重分配修正
+17. curWeight, tarWeight ← ResolveWeight(constraint.weightType, selfWeight)
+18. stiffness ← max(constraint.elasticity, 1e-6)
+19. if curWeight > 0:
+20.     transform.position ← currentPos + correction * curWeight * stiffness / solverIterations
+21. if tarWeight > 0:
+22.     constraint.target.transform.position ← targetPos - correction * tarWeight * stiffness / solverIterations
+23. // 可选：使目标点旋转朝向当前点
+24. if constraint.targetLookAtSelf:
+25.     constraint.target.transform.rotation ← LookRotation(forward, constrainedDir)
