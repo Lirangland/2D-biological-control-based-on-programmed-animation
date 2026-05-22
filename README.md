@@ -5,6 +5,7 @@ Unity版本：6000.3.3f1
 一个点（以下称为“当前点”）对于约束目标点的约束信息，可以设置与其他任意多个点之间的约束关系，包括最大距离、最小距离、固定距离、弹性回正、角度约束等，并可在编辑器视图中进行设置。
 
 1.1属性及功能
+
 Weight Type：权重类型，分为SelfWeight（自身权重）、TargetFullWeight（目标点完全权重）、SelfFullWeight（自身完全权重）三类。
 
 Target Look At Self：勾选后，目标点的前方将一直朝向当前点。
@@ -32,6 +33,7 @@ Use Fixed Angle Constraint：勾选后，启用固定角度约束(0°~360°)。
 2.PointConstraint
 
 2.1属性及功能
+
 Auto Update：自动更新，勾选后在每一帧调用当前点的约束求解，约束链上有Brain组件时自动禁用。
 
 Cover Update When Small：优化选项，勾选后，如果是从Update调用且当前距离与约束距离非常接近，则不进行解算。适用于具有移动但没有旋转运动的节点。
@@ -45,6 +47,7 @@ Constraints：约束数据（PointConstraintData）列表。
 Parents：父级约束点列表，如果没有配置则会在运行前自动获取。
 
 2.2关键方法及功能
+
 Awake()：
 遍历当前点的所有约束目标，在目标点的parents列表中注册自身引用，为后续双向遍历与自动收集提供基础。
 
@@ -72,6 +75,7 @@ ApproachTarget(Vector3)：
 3.EventModule
 
 3.1 关键方法及功能
+
 AddEventListener(string, Action)：
 注册无参事件监听。若事件名已存在，将回调追加到现有委托链；否则新建事件信息实例（EventInfo）并加入字典。
 
@@ -97,11 +101,13 @@ Clear()：
 生物行为类，负责定义生物的各种行为
 
 4.1属性及功能
+
 Behavior Name：行为名称。
 
 Brain：所在的决策中心。
 
 4.2关键方法及功能
+
 Awake()：
 初始化eventModule实例，并调用虚方法Init()。由于Init在Awake中执行，事件监听在Brain开始调度前就会完成注册。
 
@@ -121,6 +127,7 @@ OnExit()：
 生物实体的决策中枢，负责统一管理所有Receptor、Effector、PointConstraint和Behavior组件，注入中枢引用并按照固定顺序调度更新，同时维护可供所有组件共享的状态字典。
 
 5.1属性及功能
+
 Receptors：感受器列表，自动遍历约束链获取。
 
 Effectors：效应器列表，自动遍历约束链获取。
@@ -136,6 +143,7 @@ Cur Behavior：当前行为。
 Inspector State：用于初始化状态字典，支持int、float、string、bool四种类型。
 
 5.2关键方法及功能
+
 Start()：
 初始化入口。依次执行：将Inspector配置的初始状态写入字典；递归扫描所在约束链自动收集所有组件；确认当前行为并注入brain引用。
 
@@ -158,6 +166,7 @@ AddEventListener/EventTrigger等方法组：
 分别作为感知层和执行层的抽象基类，定义了子类可选重写的扩展接口。二者几乎不包含实现逻辑，作用在于为Brain提供统一的类型来管理所有感知和执行组件。感受器子类可以重写OnUpdate来实现功能，效应器子类可重写OnUpdate和TriggerEffect来实现持续生效和瞬时触发的功能。
 
 6.1属性及功能
+
 Auto Update：自动更新，勾选后在每一帧调用当前点的约束求解，约束链上有Brain组件时自动禁用。
 
 Name：感受器或效应器名称。
@@ -168,6 +177,7 @@ Brain：所在的决策中心。
 将约束链的点约束数据转化为可视化的身体与物理碰撞体的关键组件。通过遍历点约束链，使用三次贝塞尔曲线插值生成平滑的身体线条，并可根据线条实时构建2D多边形碰撞体。
 
 7.1属性及功能
+
 Auto Update：自动更新，勾选后在每一帧调用当前点的约束求解，约束链上有Brain组件时自动禁用。
 
 Controller Name：线控制器名称。
@@ -187,6 +197,7 @@ End：结束点，遍历到结束点时停止画线，否则一直遍历到约�
 Apply Collider：启用碰撞，开启后实时生成多边形碰撞体。
 
 7.2关键方法及功能
+
 Start()：
 初始化LineRenderer组件引用；若启用碰撞体则获取或创建PolygonCollider2D和Rigidbody2D组件；调用UpdateTransformList完成初始线条生成。
 
