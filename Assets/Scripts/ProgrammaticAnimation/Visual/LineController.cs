@@ -15,7 +15,7 @@ public class LineController : MonoBehaviour
     List<Vector3> linePoints = new List<Vector3>();
     public bool isTargetDirection = true;//线条是否指向约束目标点，true时以constraints[0].target为目标点遍历划线，false时以parent[0]约束点为目标遍历画线
     public PointConstraint end;//线条的终点约束组件，如果不为null则以该约束组件为终点进行划线，否则以最后一个约束点为终点
-    public bool applyCollider = false;//是否启用MeshCollider组件，启用后会在运行时根据线条生成MeshCollider组件，碰撞体会随着线条变化而变化，适用于需要与线条进行物理交互的情况
+    public bool applyCollider = false;//是否启用Collider组件，启用后会在运行时根据线条生成多边形Collider组件，碰撞体会随着线条变化而变化，适用于需要与线条进行物理交互的情况
     PolygonCollider2D polygonCollider2D;
 
     void Start()
@@ -106,7 +106,7 @@ public class LineController : MonoBehaviour
             Vector2 current = localPoints[i];
             float t = distances[i] / totalLength;
             float width = widthCurve.Evaluate(t) * widthMultiplier;
-            float halfWidth = width * 0.5f * 1f/3f;   // 你的转换系数
+            float halfWidth = width * 0.5f;
             halfWidths.Add(halfWidth);
 
             Vector2 tangent;

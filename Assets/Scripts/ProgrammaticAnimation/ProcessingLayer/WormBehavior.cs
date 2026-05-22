@@ -43,6 +43,7 @@ public class WormBehavior : Behavior
             hunger += food.nutritionValue;
             hunger = Mathf.Clamp(hunger, 0, 100);
             brain.SetIntState("hunger", hunger);
+            brain.SetBoolState("StopMove", true);
         }
         Destroy(food.gameObject);
     }

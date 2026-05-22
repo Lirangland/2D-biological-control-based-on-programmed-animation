@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -36,6 +37,10 @@ public class UIEvents : MonoBehaviour
             }
             origin.SolveEntireChainConstraints();
         }
+    }
+
+    public void SwitchSceneByObjName(){
+        UnityEngine.SceneManagement.SceneManager.LoadScene(name);
     }
 
 }

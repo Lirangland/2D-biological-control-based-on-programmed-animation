@@ -43,9 +43,13 @@ public class WormMove : Effector
 
     public override void OnUpdate()
     {
-        if (Vector3.Distance(headTransform.position, targetPosition) <= stopDistance)
+        if (Vector3.Distance(headTransform.position, targetPosition) <= stopDistance || brain.GetBoolState("StopMove"))
         {
             targetPosition = Vector3.zero;
+            if (brain.HasKey("StopMove"))
+            {
+                brain.SetBoolState("StopMove", false);
+            }
             return;
         }
         if (targetPosition == Vector3.zero || isMoving || brain.GetBoolState("IsBacking")) return;
