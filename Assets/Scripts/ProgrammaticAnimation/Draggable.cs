@@ -9,19 +9,26 @@ public class Draggable : MonoBehaviour
 
     private bool isDragging = false; // 是否正在拖动
     private Vector3 offset; // 鼠标与物体中心的偏移
+    private Camera mainCamera;
+    private Collider2D targetCollider2D;
+
+    void Awake()
+    {
+        mainCamera = Camera.main;
+        targetCollider2D = GetComponent<Collider2D>();
+    }
 
     void Update()
     {
-        if (!isDraggable) return;
+        if (!isDraggable || mainCamera == null || Mouse.current == null) return;
 
         if (Mouse.current.leftButton.wasPressedThisFrame) // 鼠标左键按下
         {
-            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit) && hit.transform == transform)
+            Vector3 mouseWorldPos = GetMouseWorldPosition();
+            if (targetCollider2D != null && targetCollider2D.OverlapPoint(mouseWorldPos))
             {
                 isDragging = true;
-                offset = transform.position - hit.point; // 计算偏移
+                offset = transform.position - mouseWorldPos; // 计算偏移
             }
         }
 
@@ -32,14 +39,18 @@ public class Draggable : MonoBehaviour
 
         if (isDragging)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-            Plane plane = new Plane(Vector3.forward, transform.position); // 定义一个水平面
-            float distance;
-            if (plane.Raycast(ray, out distance))
-            {
-                Vector3 targetPosition = ray.GetPoint(distance) + offset; // 计算目标位置
-                transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * dragSpeed); // 平滑移动
-            }
+            Vector3 targetPosition = GetMouseWorldPosition() + offset;
+            targetPosition.z = transform.position.z;
+            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * dragSpeed); // 平滑移动
         }
+    }
+
+    private Vector3 GetMouseWorldPosition()
+    {
+        Vector3 mousePosition = Mouse.current.position.ReadValue();
+        mousePosition.z = -mainCamera.transform.position.z;
+        Vector3 worldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
+        worldPosition.z = transform.position.z;
+        return worldPosition;
     }
 }
